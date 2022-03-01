@@ -1,0 +1,3 @@
+ntv.ru 80
+ns6.ntv.ru 53
+ns5.ntv.ru 53

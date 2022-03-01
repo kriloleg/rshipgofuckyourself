@@ -1,11 +1,15 @@
 # Description
-So, how does this work...
 
-This small utility helps to fetch remote file with defined list of ip addresses and check it from time to time. Using this list, each agent will work 30 min time window and swicth to the next item in the list. When reaches to the end it's... start over :)
+Tool helps to perform DDoS attack for the list of services. It's not intended to harm, but only for tests, so be careful! ONLY for tests :)
 
-You can spin as much agents as you want and distribution gonna be smth like:
+The main idea behind is:
+1. You run the tool and say how many workers you want to have
+1. Each worker goes to the remote and takes list of targest
+1. Each worker start sending packets to the target in list for 30 minutes and then switch to the next one
+1. When reaches to the end - start over
 
-Example for 5 agents and only 2 sites:
+Also, keep in mind that number of agents will try to distribute among targets you have and it will be something like this (example of 5 agents for 2 targets):
+
 ```
 Agent 1 -> site 1
 Agent 2 -> site 2
@@ -13,6 +17,28 @@ Agent 3 -> site 1
 Agent 4 -> site 2
 Agetn 5 -> site 1
 ```
+
+Sure thing, you are not limitted to this and there are few more options you can use:
+1. Work in default mode (use VPN for this) 
+1. Work in proxy mode (it's using Tor Network)
+1. Work in proxy-custom mode (it's using `proxies.txt` file)
+1. Work with locally defined targets (it's using `targets.txt file)
+
+# Usage
+
+`./ddos.sh <agents> <mode> <targets>`
+
+- **agents** - Just a number of agents to spin up
+   **1** - can be any number that is possible to handle from single machines, but don't make it too big
+
+- **mode** - Mode to use for running the script
+   **default** - requires VPN or being deployed to the required network subnet to have access
+   **proxy** - send request through the proxychains with help of tor network
+   **proxy-custom** - send requests using customly defined proxy servers in file 'proxies.txt' has to be defined in the format as 'socks5 127.0.0.1 9050'
+- **targets** - The place, where targets should be taken from
+   **remote** - will guery targets from the network and will follow them
+   **local** - takes targets from the loca 'targets.txt' file
+
 
 # Small quide on commands
 
@@ -25,9 +51,6 @@ Agetn 5 -> site 1
 
 # Requirements
 
-1. Just have VPN enabled all this time
-2. Use Linux machine (that have `docker` and `wget` to work)
+1. VPN if you don't use proxy
+2. Linux machine with `docker` and `wget` preinstalled
 
-# Disclaimer
-
-Use only for tests )

