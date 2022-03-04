@@ -10,4 +10,4 @@ function show_stat() {
 
 export -f show_stat
 
-watch show_stat
+watch "show_stat | pr -t -2"

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t ddos-cats:1.2 .
+docker build -t ddos-cats:1.3 .

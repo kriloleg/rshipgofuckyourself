@@ -29,7 +29,7 @@ function run_docker_container() {
 	  -e PROXY_SERVER=$default_proxy_server \
 	  -v $(pwd)/proxies.txt:/opt/blockrussia/proxies.txt \
 	  -v $(pwd)/targets.txt:/opt/blockrussia/targets.txt \
-	  ddos-cats:1.2
+	  ddos-cats:1.3
 }
 
 echo "##################"
@@ -55,7 +55,7 @@ fi
 echo "##################"
 echo "##################"
 
-if docker images | grep 'ddos-cats' | grep '1.2'; then
+if docker images | grep 'ddos-cats' | grep '1.3'; then
   echo "Image exists. Ready to go... you know.. :)"
 else
   echo "Importing image"
